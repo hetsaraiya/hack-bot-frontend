@@ -1,3 +1,5 @@
+// src/services/api.ts
+
 import axios, { AxiosError } from 'axios';
 import { useAuthStore } from '../store/authStore';
 
@@ -93,6 +95,22 @@ export const sessionApi = {
     } catch (error) {
       if (error instanceof AxiosError) {
         throw new Error(error.response?.data?.detail || 'Failed to fetch session messages');
+      }
+      throw error;
+    }
+  },
+
+  deleteSession: async (sessionId: number, token: string | null) => {
+    try {
+      const response = await api.delete(`/chat/session/${sessionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        throw new Error(error.response?.data?.detail || 'Failed to delete session');
       }
       throw error;
     }

@@ -1,3 +1,23 @@
+/* src/index.css */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.sessions-sidebar .hover .text-red-600 {
+  opacity: 100;
+}
+
+.sessions-sidebar .hover {
+  background-color: rgba(147, 197, 253, 0.2);
+  color: #1D4ED8;
+}
+
+.sessions-sidebar .session-item:hover .delete-button {
+  opacity: 100;
+}
+
+.sessions-sidebar .selected-session {
+  background-color: rgba(147, 197, 253, 0.2);
+  color: #1D4ED8;
+}

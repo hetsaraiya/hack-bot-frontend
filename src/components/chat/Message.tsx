@@ -7,14 +7,6 @@ interface MessageProps {
 }
 
 export function Message({ message }: MessageProps) {
-  // const formatContent = (content: string) => {
-  //   return content.split('\n').map((line, i) => (
-  //     <React.Fragment key={i}>
-  //       {line}
-  //       <br />
-  //     </React.Fragment>
-  //   ));
-  // };
 
   return (
     <div className="space-y-4">

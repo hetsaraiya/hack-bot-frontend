@@ -18,7 +18,7 @@ export function useChat(sessionId: number | null) {
 
   // Send message function
   const sendMessage = async (input: string) => {
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading || sessionId === null) return;
 
     const userMessage = { question: input, answer: '' };
 
@@ -28,7 +28,7 @@ export function useChat(sessionId: number | null) {
 
     try {
       // Call the API to get the bot's response
-      const response = await chatApi.sendMessage(input);
+      const response = await chatApi.sendMessage(input, sessionId);
       
       // Format both user question and bot answer
       const formattedResponse = formatMessage(response.answer);

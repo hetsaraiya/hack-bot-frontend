@@ -10,6 +10,7 @@ import type { Session } from '../types/session';
 export function ChatScreen() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
+  const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const user = useAuthStore((state) => state.user);
   const { messages, isLoading, sendMessage, loadSessionMessages, clearMessages } = useChat(currentSessionId);
 
@@ -55,12 +56,18 @@ export function ChatScreen() {
   };
 
   const handleSessionSelect = (sessionId: number) => {
-    setCurrentSessionId(sessionId);
-    clearMessages();
+    if (sessionId === activeSessionId) {
+      clearMessages();
+      setActiveSessionId(null);
+    } else {
+      setCurrentSessionId(sessionId);
+      setActiveSessionId(sessionId);
+    }
   };
 
   const handleNewSession = () => {
     setCurrentSessionId(null);
+    setActiveSessionId(null);
     clearMessages();
   };
 
@@ -73,8 +80,16 @@ export function ChatScreen() {
         onNewSession={handleNewSession}
       />
       <div className="flex-1 flex flex-col">
-        <MessageList messages={messages} isLoading={isLoading} />
-        <MessageInput onSendMessage={sendMessage} isLoading={isLoading} />
+        {activeSessionId !== null ? (
+          <>
+            <MessageList messages={messages} isLoading={isLoading} />
+            <MessageInput onSendMessage={sendMessage} isLoading={isLoading} />
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-gray-500">
+            <p>Select a session to start chatting</p>
+          </div>
+        )}
       </div>
     </div>
   );
