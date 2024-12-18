@@ -1,3 +1,5 @@
+// src/components/ChatScreen.tsx
+
 import { useState, useEffect } from 'react';
 import { MessageList } from './chat/MessageList';
 import { MessageInput } from './chat/MessageInput';
@@ -41,6 +43,29 @@ export function ChatScreen() {
     };
   }, []);
 
+  const modifiedSendMessage = async (input: string) => {
+    // If no current session, create a new one before sending
+    if (!currentSessionId) {
+      try {
+        const response = await sessionApi.getUserSessions();
+        const newSessions = response.sessions;
+        setSessions(newSessions);
+        
+        // Set the latest (newly created) session as current
+        if (newSessions.length > 0) {
+          const latestSessionId = newSessions[newSessions.length - 1].id;
+          setCurrentSessionId(latestSessionId);
+          setActiveSessionId(latestSessionId);
+        }
+      } catch (error) {
+        console.error('Failed to load new sessions:', error);
+      }
+    }
+
+    // Then proceed with sending the message
+    return sendMessage(input);
+  };
+
   const loadSessions = async () => {
     try {
       if (user?.user_id) {
@@ -66,9 +91,9 @@ export function ChatScreen() {
   };
 
   const handleNewSession = () => {
+    clearMessages();
     setCurrentSessionId(null);
     setActiveSessionId(null);
-    clearMessages();
   };
 
   return (
@@ -80,16 +105,8 @@ export function ChatScreen() {
         onNewSession={handleNewSession}
       />
       <div className="flex-1 flex flex-col">
-        {activeSessionId !== null ? (
-          <>
-            <MessageList messages={messages} isLoading={isLoading} />
-            <MessageInput onSendMessage={sendMessage} isLoading={isLoading} />
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-500">
-            <p>Select a session to start chatting</p>
-          </div>
-        )}
+        <MessageList messages={messages} isLoading={isLoading} />
+        <MessageInput onSendMessage={modifiedSendMessage} isLoading={isLoading} />
       </div>
     </div>
   );

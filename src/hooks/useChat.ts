@@ -1,3 +1,5 @@
+// src/hooks/useChat.ts
+
 import { useState, useCallback } from 'react';
 import { chatApi, sessionApi } from '../services/api';
 import type { Message } from '../types/chat';
@@ -17,8 +19,8 @@ export function useChat(sessionId: number | null) {
   }, []);
 
   // Send message function
-  const sendMessage = async (input: string) => {
-    if (!input.trim() || isLoading || sessionId === null) return;
+  const sendMessage = async (input: string): Promise<number | null> => {
+    if (!input.trim() || isLoading) return null;
 
     const userMessage = { question: input, answer: '' };
 
@@ -28,7 +30,7 @@ export function useChat(sessionId: number | null) {
 
     try {
       // Call the API to get the bot's response
-      const response = await chatApi.sendMessage(input, sessionId);
+      const response = await chatApi.sendMessage(input, sessionId ?? undefined);
       
       // Format both user question and bot answer
       const formattedResponse = formatMessage(response.answer);
@@ -48,6 +50,7 @@ export function useChat(sessionId: number | null) {
         window.dispatchEvent(new CustomEvent('sessionsUpdated', { 
           detail: sessionsResponse.sessions 
         }));
+        return sessionsResponse.sessions[sessionsResponse.sessions.length - 1].id;
       }
     } catch (error) {
       console.error('Chat error:', error);
@@ -58,6 +61,7 @@ export function useChat(sessionId: number | null) {
     } finally {
       setIsLoading(false);
     }
+    return null;
   };  
 
   // Load session messages
